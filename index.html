@@ -1,7 +1,43 @@
 <!DOCTYPE html>
 <html>
+<script src='https://d3js.org/d3.v5.min.js'></script>
+<style> rect {fill: lightblue; stroke: black; }</style>
 <body>
-<h1>Hello World</h1>
+<h1>UIUC - CS 413 Assignment</h1>
 <p>I'm hosted with GitHub Pages.</p>
+
+<svg width=300 height=300>
+</svg>
+<script>
+var data = [4,8,15,16,23,42];
+var height = 200;
+var width = 200;
+var margin = 50;
+
+var svg = d3.select("svg");
+
+var x = d3.scaleBand().domain([0,1,2,3,4,5]).range([0, 200]);       
+var y = d3.scaleLinear().domain([0,42]).range([200, 0]);       
+
+svg.append("g")
+  .attr("transform", "translate("+margin+","+margin+")")
+  .selectAll()
+  .data(data)
+  .enter()
+  .append("rect")
+   .attr("x", function(d, i) { return width/6 * i;})
+   .attr("y", function(d) { return height - height/d3.max(data) * d;} )
+   .attr("width", width/6)
+   .attr("height", function(d) { return height/d3.max(data) * d ;} );
+
+svg.append("g")
+  .attr("transform", "translate("+margin+","+margin+")")
+  .call(d3.axisLeft().scale(y).ticks(9));
+   
+svg.append("g")
+  .attr("transform", "translate("+margin+","+(height+margin)+")")
+  .call(d3.axisBottom(x).ticks(6));
+ 
+</script>
 </body>
 </html>
