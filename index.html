@@ -24,7 +24,7 @@
       <img src="./images/uiuc-logo.png" class="img-rounded" alt="UIUC">
       </div>
       <p>
-        <h3>CS 416: Data Visualization (formerly CS 498)</h3>
+        <h3>CS 416: Data Visualization </h3>
         <h4>World Population over the years</h4>
         </p>
       <p>The chart below shows population growth in last 500 years</p>
@@ -87,10 +87,14 @@
 let max;
 let code;
 
-async function init() {
+function init() {
   var url = new URL(window.location.href);
   code = url.searchParams.get("code");
-  if (code == null) code = "WOR";
+  if (code == null) {
+    console.log('code is undefined, deafult to World')
+    code = "WOR";
+  }
+
   document.getElementById(code).setAttribute("class", "active");
   loadChart();
 }
@@ -107,7 +111,7 @@ function filterData(data) {
 async function loadChart() {
   // set the dimensions and margins of the graph
   const margin = {top: 10, right: 50, bottom: 100, left: 100},
-      width = 800 - margin.left - margin.right,
+      width = 900 - margin.left - margin.right,
       height = 500 - margin.top - margin.bottom;
 
   var div = d3.select("div").append("div")
