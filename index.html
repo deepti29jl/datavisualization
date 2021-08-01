@@ -9,12 +9,14 @@
 </head>
 
 <!-- D3 library v6 -->
- <script src="https://d3js.org/d3.v6.js"></script>
-<!-- <script src="https://d3js.org/d3.v4.js"></script> -->
-
+<script src="https://d3js.org/d3.v6.js"></script>
 
 <!-- Boostrap librabry -->
 <script src="./bootstrap-4.3.1/js/bootstrap.min.js"></script>
+
+<!-- For annotations -->
+<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/d3-annotation/2.5.1/d3-annotation.min.js"></script> -->
+<script src="https://rawgit.com/susielu/d3-annotation/master/d3-annotation.min.js"></script>
 
 <body onload="init()">
 
@@ -25,9 +27,9 @@
       </div>
       <p>
         <h3>CS 416: Data Visualization </h3>
-        <h4>World Population over the years</h4>
-        </p>
-      <p>The chart below shows population growth in last 500 years</p>
+        <h4>World Population in 500 years</h4>
+        <p>Population has been steadily growing over the past few hundred years due to steady development in Social and Economic sectors. However, there have been periods when the sligh decline was observed, possibly due to <strong>pandemics, wars </strong>and/or <strong>natural disasters.</strong> </p>
+      </p>
     </div>
     <div class="topnav navbar-expand-lg">
       <a id="WOR" class="nav-item nav-link" href="?code=WOR">World</a>
@@ -38,14 +40,15 @@
       <a id="DEU" class="nav-item nav-link" href="?code=DEU">Germany</a>
       <a id="FRA" class="nav-item nav-link" href="?code=FRA">France</a>
       <a id="ITA" class="nav-item nav-link" href="?code=ITA">Italy</a>
-      <a id="EGY" class="nav-item nav-link" href="?code=EGY">Egypt</a>
       <a id="ISR" class="nav-item nav-link" href="?code=ISR">Israel</a>
-      <a id="IRN" class="nav-item nav-link" href="?code=IRN">Iran</a>
-      <a id="IRQ" class="nav-item nav-link" href="?code=IRQ">Iraq</a>
-      <a id="GBR" class="nav-item nav-link" href="?code=GBR">UK</a>
     </div>
     <svg>
     </svg>
+    <div id="tooltip"></div>
+    <div>
+        <strong>Disclaimer:</strong> The chart shows population growth in the last 500 years based on data downloaded from third party. Data accuracy is not guaranteed.<br/>
+        <strong>Data Source:</strong> <a style="color:#3a3b3c" href="https://ourworldindata.org/world-population-growth">Our World in Data</a>
+    </div>
   </div> 
 <style>
 
@@ -91,7 +94,7 @@ function init() {
   var url = new URL(window.location.href);
   code = url.searchParams.get("code");
   if (code == null) {
-    console.log('code is undefined, deafult to World')
+    console.log('code is undefined, default to World')
     code = "WOR";
   }
 
@@ -100,9 +103,9 @@ function init() {
 }
 
 function filterData(data) {
-  console.log('Raw data size: ', data.length);
+  console.log('Initial row count: ', data.length);
   var filtered = data.filter(function(d){ return d.Code == code});
-  console.log('Filtered data size: ', filtered.length);
+  console.log('Filtered row count: ', filtered.length);
 
   return filtered; 
 }
@@ -110,11 +113,11 @@ function filterData(data) {
 
 async function loadChart() {
   // set the dimensions and margins of the graph
-  const margin = {top: 10, right: 50, bottom: 100, left: 100},
+  const margin = {top: 10, right: 50, bottom: 50, left: 100},
       width = 900 - margin.left - margin.right,
       height = 500 - margin.top - margin.bottom;
 
-  var div = d3.select("div").append("div")
+  var tooltip = d3.select("#tooltip").append("div")
     .attr("class", "tooltip ")
     .style("opacity", 0);
 
@@ -125,6 +128,270 @@ async function loadChart() {
     .append("g")
       .attr("transform",
             "translate(" + margin.left + "," + margin.top + ")");
+
+  var annotations = { 
+      "WOR": [{
+              note: {
+                title: "Slight dip",
+                label: "from 1820 to 1830"
+              },
+              connector: {
+                end: "arrow",         // Can be none, or arrow or dot
+                type: "curve"         // Can be curve or line
+              },
+              color: ["grey"],
+              x: 180,
+              y: 370,
+              dy: -50,
+              dx: -100
+            },
+            {
+              note: {
+                title: "Another dip",
+                label: "from 1850 to 1860"
+              },
+              connector: {
+                end: "arrow",         // Can be none, or arrow or dot
+                type: "curve"         // Can be curve or line
+              },
+              color: ["grey"],
+              x: 280,
+              y: 355,
+              dy: -100,
+              dx: -100
+            },
+            {
+              note: {
+                title: "And again",
+                label: "from 1870 to 1880"
+              },
+              connector: {
+                end: "arrow",         // Can be none, or arrow or dot
+                type: "curve"         // Can be curve or line
+              },
+              color: ["grey"],
+              x: 340,
+              y: 350,
+              dy: -150,
+              dx: -70
+            }
+        ],
+        "USA":[{
+              note: {
+                title: "Almost steady growth",
+                label: "from 1500 all the way to 2000"
+              },
+              connector: {
+                end: "arrow",         // Can be none, or arrow or dot
+                type: "curve"         // Can be curve or line
+              },
+              color: ["grey"],
+              x: 700,
+              y: 35,
+              dy: 50,
+              dx: -350
+            }],
+        "CHN": [
+          {
+            note: {
+              title: "Decline from",
+              label: "1600 to 1650 and"
+            },
+            connector: {
+                end: "arrow",         // Can be none, or arrow or dot
+                type: "curve"         // Can be curve or line
+            },
+            color: ["grey"],
+            x: 75,
+            y: 390,
+            dy: -70,
+            dx: 50
+          },
+          {
+            note: {
+              title: "Then again decline",
+              label: "from 1850 to 1860 and again in 1870"
+            },
+            connector: {
+                end: "arrow",         // Can be none, or arrow or dot
+                type: "curve"         // Can be curve or line
+            },
+            color: ["grey"],
+            x: 330,
+            y: 305,
+            dy: -100,
+            dx: -100
+          }
+        ],
+        "IND": [{
+            note: {
+              title: "Steady growth except",
+              label: "from 1940 to 1950"
+            },
+            connector: {
+                end: "arrow",         // Can be none, or arrow or dot
+                type: "curve"         // Can be curve or line
+            },
+            color: ["grey"],
+            x: 560,
+            y: 270,
+            dy: -100,
+            dx: -100
+          }],
+        "BRA": [{
+              note: {
+                title: "Almost steady growth",
+                label: "from 1500 all the way to 2000"
+              },
+              connector: {
+                end: "arrow",         // Can be none, or arrow or dot
+                type: "curve"         // Can be curve or line
+              },
+              color: ["grey"],
+              x: 700,
+              y: 35,
+              dy: 50,
+              dx: -350
+            }
+        ],
+        "DEU": [{
+                  note: {
+                    title: "Sharp decline",
+                    label: "from 1600 to 1650"
+                  },
+                  connector: {
+                      end: "arrow",         // Can be none, or arrow or dot
+                      type: "curve"         // Can be curve or line
+                  },
+                  color: ["grey"],
+                  x: 80,
+                  y: 375,
+                  dy: -60,
+                  dx: 50
+              },
+              {
+                  note: {
+                    title: "Then again decline",
+                    label: "from 1910 to 1920"
+                  },
+                  connector: {
+                      end: "arrow",         // Can be none, or arrow or dot
+                      type: "curve"         // Can be curve or line
+                  },
+                  color: ["grey"],
+                  x: 490,
+                  y: 110,
+                  dy: 40,
+                  dx: -200
+              },
+              {
+                  note: {
+                    title: "And soon after",
+                    label: "from 1940 to 1950"
+                  },
+                  connector: {
+                      end: "arrow",         // Can be none, or arrow or dot
+                      type: "curve"         // Can be curve or line
+                  },
+                  color: ["grey"],
+                  x: 580,
+                  y: 70,
+                  dy: 10,
+                  dx: -100
+              }
+            ],
+        "FRA": [
+            {
+              note: {
+                title: "Almost steady growth",
+                label: "except 1920"
+              },
+              connector: {
+                end: "arrow",         // Can be none, or arrow or dot
+                type: "curve"         // Can be curve or line
+              },
+              color: ["grey"],
+              x: 490,
+              y: 150,
+              dy: -50,
+              dx: -150
+            },
+            {
+              note: {
+                label: "and then 1940"
+              },
+              connector: {
+                end: "arrow",         // Can be none, or arrow or dot
+                type: "curve"         // Can be curve or line
+              },
+              color: ["grey"],
+              x: 550,
+              y: 140,
+              dy: -40,
+              dx: -50
+            }
+        ],
+        "ITA": [
+          {
+              note: {
+                title:"Sharp decline",
+                label: "from 1600 to 1650"
+              },
+              connector: {
+                end: "arrow",         // Can be none, or arrow or dot
+                type: "curve"         // Can be curve or line
+              },
+              color: ["grey"],
+              x: 80,
+              y: 345,
+              dy: -100,
+              dx: 50
+            },
+            {
+              note: {
+                label: "Steady growth afterwards"
+              },
+              connector: {
+                end: "arrow",         // Can be none, or arrow or dot
+                type: "curve"         // Can be curve or line
+              },
+              color: ["grey"],
+              x: 700,
+              y: 5,
+              dy: 50,
+              dx: -350
+            }
+        ],
+        "ISR": [
+            {
+              note: {
+                title: "Almost steady growth",
+                label: "from 1500 all the way to 2000"
+              },
+              connector: {
+                end: "arrow",         // Can be none, or arrow or dot
+                type: "curve"         // Can be curve or line
+              },
+              color: ["grey"],
+              x: 700,
+              y: 35,
+              dy: 50,
+              dx: -350
+            }]
+        } ;
+
+  const annotationType = d3.annotationCustomType(
+            d3.annotationXYThreshold, 
+            {"note":{
+                "lineType":"none",
+                "orientation": "top",
+                "align":"middle"}
+            }
+          );
+
+  const makeAnnotations = d3.annotation()
+                    .type(annotationType)
+                    .annotations(annotations[code]);
 
   // Parse the Data
   d3.csv("https://raw.githubusercontent.com/deepti29jl/deepti29jl.github.io/main/data/population-by-country.csv").then( function(rawData) {
@@ -161,27 +428,29 @@ async function loadChart() {
     .join("rect")
       .attr("x", d => x(d.Year))
       .attr("width", x.bandwidth())
-      //.attr("fill", "#69b3a2")
       .attr("fill", "steelblue")
-      // no bar at the beginning thus:
       .attr("height", d => height - y(0)) // always equal to 0
       .attr("y", d => y(0))
       .on("mouseover", function(event,d) {
         var number = parseInt(d.Population);
         console.log(d.Year,',', number.toLocaleString())
-        div.transition()
+        tooltip.transition()
          .duration(100)
          .style("opacity", .9)
-        div.attr("style","background-color:lightgray")
-        div.html("<strong>Year:</strong> " + d.Year + "<br/><strong>Population:</strong> " + number.toLocaleString())
+        tooltip.attr("style","background-color:lightgray")
+        tooltip.html("<strong>Year:</strong> " + d.Year + "<br/><strong>Population:</strong> " + number.toLocaleString())
            .style("left", (event.pageX) + "px")
-           .style("top", (event.pageY - 28) + "px");
+           .style("top", (event.pageY) + "px");
          })
       .on("mouseout", function(d) {
-        div.transition()
+        tooltip.transition()
            .duration(200)
            .style("opacity", 0)
          });
+
+  svg.append("g")
+    .attr("class", "annotation-group")
+    .call(makeAnnotations);
 
   // Animation
   svg.selectAll("rect")
