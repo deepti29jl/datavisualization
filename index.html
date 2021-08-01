@@ -9,7 +9,9 @@
 </head>
 
 <!-- D3 library v6 -->
-<script src="https://d3js.org/d3.v6.js"></script>
+ <script src="https://d3js.org/d3.v6.js"></script>
+<!-- <script src="https://d3js.org/d3.v4.js"></script> -->
+
 
 <!-- Boostrap librabry -->
 <script src="./bootstrap-4.3.1/js/bootstrap.min.js"></script>
@@ -31,13 +33,13 @@
       <a id="WOR" class="nav-item nav-link" href="?code=WOR">World</a>
       <a id="USA" class="nav-item nav-link" href="?code=USA">USA</a>
       <a id="CHN" class="nav-item nav-link" href="?code=CHN">China</a>
-      <a id="RUS" class="nav-item nav-link" href="?code=RUS">Russia</a>
       <a id="IND" class="nav-item nav-link" href="?code=IND">India</a>
       <a id="BRA" class="nav-item nav-link" href="?code=BRA">Brazil</a>
       <a id="DEU" class="nav-item nav-link" href="?code=DEU">Germany</a>
       <a id="FRA" class="nav-item nav-link" href="?code=FRA">France</a>
       <a id="ITA" class="nav-item nav-link" href="?code=ITA">Italy</a>
       <a id="EGY" class="nav-item nav-link" href="?code=EGY">Egypt</a>
+      <a id="ISR" class="nav-item nav-link" href="?code=ISR">Israel</a>
       <a id="IRN" class="nav-item nav-link" href="?code=IRN">Iran</a>
       <a id="IRQ" class="nav-item nav-link" href="?code=IRQ">Iraq</a>
       <a id="GBR" class="nav-item nav-link" href="?code=GBR">UK</a>
@@ -74,34 +76,23 @@
 
 /* Add a color to the active/current link */
 .topnav a.active {
-  background-color: #04AA6D;
+  background-color: darkorange;
   color: white;
 }
+
+
 </style>
 <script>
 
-//var maxPopulation = 1300000000;
 let max;
 let code;
 
-function init() {
+async function init() {
   var url = new URL(window.location.href);
   code = url.searchParams.get("code");
+  if (code == null) code = "WOR";
   document.getElementById(code).setAttribute("class", "active");
   loadChart();
-}
-
-function filterRow(row) {
-  if (year == null)
-    return row;
-    if(row.Year == year) {
-        if (code && row.Code == code) {
-          return row;
-        } else {
-          return row;
-        }
-    }
-    return {};
 }
 
 function filterData(data) {
@@ -112,11 +103,16 @@ function filterData(data) {
   return filtered; 
 }
 
+
 async function loadChart() {
   // set the dimensions and margins of the graph
   const margin = {top: 10, right: 50, bottom: 100, left: 100},
       width = 800 - margin.left - margin.right,
       height = 500 - margin.top - margin.bottom;
+
+  var div = d3.select("div").append("div")
+    .attr("class", "tooltip ")
+    .style("opacity", 0);
 
   // append the svg object to the body of the page
   var svg = d3.select("svg")
@@ -131,7 +127,7 @@ async function loadChart() {
 
   console.log('country code: ', code);
   data = filterData(rawData);
-  var max = d3.max(data, function(d) { return +d.Population;} );
+  var max = d3.max(data, function(d) { return +d.Population;} ) + 10000;
   console.log('max:', max);
 
   // X axis
@@ -139,6 +135,7 @@ async function loadChart() {
     .range([ 0, width ])
     .domain(data.map(d => d.Year))
     .padding(0.2);
+
   svg.append("g")
     .attr("transform", `translate(0,${height})`)
     .call(d3.axisBottom(x))
@@ -155,15 +152,32 @@ async function loadChart() {
     .call(d3.axisLeft(y));
 
   // Bars
-  svg.selectAll("mybar")
+  svg.selectAll()
     .data(data)
     .join("rect")
       .attr("x", d => x(d.Year))
       .attr("width", x.bandwidth())
-      .attr("fill", "#69b3a2")
+      //.attr("fill", "#69b3a2")
+      .attr("fill", "steelblue")
       // no bar at the beginning thus:
       .attr("height", d => height - y(0)) // always equal to 0
       .attr("y", d => y(0))
+      .on("mouseover", function(event,d) {
+        var number = parseInt(d.Population);
+        console.log(d.Year,',', number.toLocaleString())
+        div.transition()
+         .duration(100)
+         .style("opacity", .9)
+        div.attr("style","background-color:lightgray")
+        div.html("<strong>Year:</strong> " + d.Year + "<br/><strong>Population:</strong> " + number.toLocaleString())
+           .style("left", (event.pageX) + "px")
+           .style("top", (event.pageY - 28) + "px");
+         })
+      .on("mouseout", function(d) {
+        div.transition()
+           .duration(200)
+           .style("opacity", 0)
+         });
 
   // Animation
   svg.selectAll("rect")
@@ -174,9 +188,10 @@ async function loadChart() {
     .delay((d,i) => {
       //console.log(i); 
       return i*100
-    })
+    });
 
   })
+
 };
 
 </script>
