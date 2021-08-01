@@ -1,32 +1,41 @@
 <!DOCTYPE html>
 <html>
-<script src='https://d3js.org/d3.v5.min.js'></script>
-<style> rect {fill: lightblue; stroke: black; }</style>
-<body onload='init()'>
-<h1>UIUC - CS 413 Assignment</h1>
-<p>I'm hosted with GitHub Pages.</p>
 
-<svg width=300 height=300>
-</svg>
+<script src="https://d3js.org/d3.v5.min.js"></script>
+
+<script src=”https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js” integrity=”sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo” crossorigin=”anonymous”></script>
+<script src=”https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha1/js/bootstrap.min.js” integrity=”sha384-oesi62hOLfzrys4LxRF63OJCXdXDipiYWBnvTl9Y9/TRlw5xlKIEHpNyvvDShgf/” crossorigin=”anonymous”></script>
+
+<style> rect {fill: lightblue; stroke: black; }</style>
+<body onload="init()">
+  <h1>UIUC - CS 413 Assignment</h1>
+  <p>I'm hosted with GitHub Pages.</p>
+  <div class="row">
+    <div class="col-4 d-flex justify-content-center">
+      <svg width=840 height=840>
+      </svg>
+    </div>
+  </div>
+
 <script>
 async function init() {
 
-  //var populationData = d3.csv("https://github.com/deepti29jl/deepti29jl.github.io/blob/main/data/population-by-country.csv");
+//  var populationData = d3.csv("https://github.com/deepti29jl/deepti29jl.github.io/blob/main/data/population-by-country.csv");
 
-  var populationData = d3.csv("./data/population-by-country.csv");
+//  var populationData = d3.csv("./data/population-by-country.csv");
 
-  var country = populationData.Country;
-  var population = populationData.Population;
+//  var country = populationData.Country;
+//  var population = populationData.Population;
 
   var data = [4,8,15,16,23,42];
-  var height = 200;
-  var width = 200;
-  var margin = 50;
+  var height = 500;
+  var width = 500;
+  var margin = 40;
 
   var svg = d3.select("svg");
 
-  var x = d3.scaleBand().domain([0,1,2,3,4,5]).range([0, 200]);       
-  var y = d3.scaleLinear().domain([0,42]).range([200, 0]);       
+  var x = d3.scaleBand().domain([0,1,2,3,4,5]).range([0, width]);       
+  var y = d3.scaleLinear().domain([0,42]).range([height, 0]);       
 
   svg.append("g")
     .attr("transform", "translate("+margin+","+margin+")")
